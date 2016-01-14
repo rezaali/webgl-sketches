@@ -1,0 +1,65 @@
+{
+  "name": "base",
+  "version": "1.0.0",
+  "description": "webgl sketches",
+  "main": "index.js",
+  "browserify": {
+    "transform": [
+      "glslify"
+    ]
+  },
+  "scripts": {
+    "catmullclark": "budo catmullclark/catmullclark.js:bundle.js --open --live",
+    "dynamicdrawing": "budo dynamicdrawing/dynamicdrawing.js:bundle.js --open --live",
+    "halfedge": "budo halfedge/halfedge.js:bundle.js --open --live",
+    "hull": "budo hull/hull.js:bundle.js --open --live",
+    "letsgetprinting": "budo letsgetprinting/letsgetprinting.js:bundle.js --open --live",
+    "loadobj": "budo loadobj/loadobj.js:bundle.js --open --live",
+    "loadstl": "budo loadstl/loadstl.js:bundle.js --open --live",
+    "loopsmooth": "budo loopsmooth/loopsmooth.js:bundle.js --open --live",
+    "particles": "budo particles/particles.js:bundle.js --open --live",
+    "springs": "budo springs/springs.js:bundle.js --open --live",
+    "triangulate": "budo triangulate/triangulate.js:bundle.js --open --live",
+    "triangulate2d": "budo triangulate2d/triangulate2d.js:bundle.js --open --live",
+    "waves": "budo waves/waves.js:bundle.js --open --live",
+    "bundle": "browserify index.js -o bundle.js"
+  },
+  "dependencies": {
+    "browserify": "*",
+    "canvas-fit": "*",
+    "eases": "^1.0.8",
+    "gl-buffer": "^2.1.2",
+    "gl-clear": "^2.0.0",
+    "gl-context": "*",
+    "gl-geometry": "*",
+    "gl-matrix": "^2.3.1",
+    "gl-shader": "*",
+    "gl-vao": "^1.2.1",
+    "glslify": "*",
+    "guf": "*",
+    "is-mobile": "*",
+    "key-pressed": "0.0.1",
+    "lgp": "*",
+    "mda": "*",
+    "mhf": "*",
+    "nsc": "*",
+    "simplex-noise": "^2.2.0",
+    "sps": "*",
+    "vkey": "^1.0.0",
+    "ycam": "*"
+  },
+  "keywords": [
+    "stackgl",
+    "webgl",
+    "ycam",
+    "design",
+    "computational",
+    "geometry",
+    "algorithms",
+    "digital",
+    "fabrication",
+    "reza ali"
+  ],
+  "author": "Syed Reza Ali <syed.reza.ali@gmail.com> (http://www.syedrezaali.com/)",
+  "license": "Apache-2.0"
+}
