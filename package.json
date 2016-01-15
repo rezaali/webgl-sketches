@@ -28,6 +28,7 @@
   "dependencies": {
     "browserify": "*",
     "canvas-fit": "*",
+    "cga": "^1.0.5",
     "eases": "^1.0.8",
     "gl-buffer": "^2.1.2",
     "gl-clear": "^2.0.0",
