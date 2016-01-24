@@ -54,7 +54,8 @@ module.exports = [
   },
   {
     path : './models/icosahedron.obj',
-    matrix: mat4.fromRotation( mat4.create(), Math.PI * 0.5, [ 1, 1, 1 ] ),
+    matrix: mat4.create(),
+    // matrix: mat4.fromRotation( mat4.create(), Math.PI * 0.5, [ 1, 1, 1 ] ),
     opts : { flip: false, scale: 1.5 }
   },
   {

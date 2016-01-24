@@ -1,6 +1,8 @@
 // Setup Canvas
 var canvas = document.body.appendChild( document.createElement( 'canvas' ) );
 
+// var canvas = document.body.appendChild( document.createElement( 'canvas' ) );
+// canvas.style.zIndex = 1;
 // Get WebGL Context
 var gl = require('gl-context')( canvas, { preserveDrawingBuffer: true }, render );
 
@@ -8,7 +10,7 @@ var gl = require('gl-context')( canvas, { preserveDrawingBuffer: true }, render 
 var glGeometry = require('gl-geometry');
 var glShader = require('gl-shader');
 var glslify = require('glslify');
-var clear = require('gl-clear')();
+var clear = require('gl-clear')( { color: [ 0.0, 0.0, 0.0, 1.0 ] } );
 var mat4 = require('gl-matrix').mat4;
 var mat3 = require('gl-matrix').mat3;
 var vec3 = require('gl-matrix').vec3;
@@ -18,18 +20,30 @@ var fit = require('canvas-fit');
 var isMobile = require('is-mobile');
 
 // Import YCAM GRP Libraries
-var cam = require('nsc')( canvas, { position: [ 0.0, 0.0, -7.0 ]} );
+var cam = require('./../../libs/nsc')( canvas, {
+  position: [ 0.0, 0.0, -50.0 ],
+  rotation: mat4.fromRotation( mat4.create(), Math.PI * 0.25, [ 1, 0, 0 ] )
+} );
 var cga = require('cga');
-var lgp = require('lgp');
-var Mesh = require('mda').Mesh;
-var FaceVertices = require('mda').FaceVertices;
-var InsertVertexOperator = require('mda').InsertVertexOperator;
-var InsertEdgeOperator = require('mda').InsertEdgeOperator;
-var DeleteEdgeOperator = require('mda').DeleteEdgeOperator;
-
-var MeshIntegrity = require('mda').MeshIntegrity;
-var TriangulateOperator = require('mda').TriangulateOperator;
-var LoopSmoothOperator = require('mda').LoopOperator;
+var lgp = require('./../../libs/lgp');
+var mda = require('./../../libs/mda');
+var Mesh = mda.Mesh;
+var FaceVertices = mda.FaceVertices;
+var InsertVertexOperator = mda.InsertVertexOperator;
+var InsertEdgeOperator = mda.InsertEdgeOperator;
+var DeleteEdgeOperator = mda.DeleteEdgeOperator;
+var ExtrudeOperator = mda.ExtrudeOperator;
+var PipeOperator = mda.PipeOperator;
+var DuplicateOperator = mda.DuplicateOperator;
+var CombineOperator = mda.CombineOperator;
+var ScaleOperator = mda.ScaleOperator;
+var MoveOperator = mda.MoveOperator;
+var InvertOperator = mda.InvertOperator;
+var MeshIntegrity = mda.MeshIntegrity;
+var TriangulateOperator = mda.TriangulateOperator;
+var LoopSmoothOperator = mda.LoopOperator;
+var CatmullClarkOperator = mda.CatmullClarkOperator;
+var MeshCentroid = mda.MeshCentroid;
 var vertexNormals = require('guf').vertexNormals;
 var calculateNormal = require('guf').calculateNormal;
 var models = require('./../models');
@@ -37,41 +51,76 @@ var models = require('./../models');
 //Interaction
 var keyPressed = require('key-pressed');
 
-var mesh
-var geo;
-var geoWire;
-var geoPoints;
+var omesh, meshOut, meshOutTri;
+var positions, cells;
+var geoOut;
+var geoWireOut, geoWire;
+var geoPointsOut, geoPoints;
 
-var modelIndex = 12;
+var renderSolid = true;
+var color = [ 1.0, 1.0, 1.0, 1.0 ];
+var colorPoints = [ 1.0, 1.0, 1.0, 0.15 ];
+var colorWire = [ 1.0, 1.0, 1.0, 0.15 ];
+//7 = ico
+//4 = cube
+var modelIndex = 4;
 var path = models[ modelIndex ].path;
 var opts = models[ modelIndex ].opts;
 var model = models[ modelIndex ].matrix;
 
-var fileReader = lgp.fileReader( path, function parseObj( text ) {
-  var results = lgp.objDeserializer( text, opts );
+function setupGeometry() {
+  lgp.fileReader( path, function parseObj( text ) {
+    var results = lgp.objDeserializer( text, opts );
 
-  mesh = new Mesh();
-  mesh.setPositions( results.positions );
-  mesh.setCells( results.cells );
-  mesh.process();
-  // MeshIntegrity( mesh );
+    omesh = new Mesh();
+    omesh.setPositions( results.positions );
+    omesh.setCells( results.cells );
+    omesh.process();
 
-  // var face = mesh.getFaces()[ 4 ];
-  // var vertices = FaceVertices( face );
-  // var result = InsertEdgeOperator( mesh, face.getIndex(), vertices[ 0 ].getIndex(), vertices[ 2 ].getIndex() );
-  // DeleteEdgeOperator( mesh, result.edge.getIndex() );
+    var centroid = MeshCentroid( omesh );
+    vec3.scale( centroid, centroid, -1.0 );
+    MoveOperator( omesh, centroid );
+    ScaleOperator( omesh, 10.0 );
 
-  var edge = mesh.getEdges()[ 6 ];
-  var vertex = edge.getHalfEdge().getVertex();
-  // var result = InsertVertexOperator( mesh, edge.getIndex() );
-  // console.log( result );
-  // TriangulateOperator( mesh );
-  // LoopSmoothOperator( mesh );
+    ExtrudeOperator( omesh, 5, 0.00, 7.0 );
+    var face = ExtrudeOperator( omesh, 0, 0.00, 1.0 );
+    ExtrudeOperator( omesh, 0, 0.00, 0.0 );
+    ExtrudeOperator( omesh, 0, -19.0, 2.0 );
+    ExtrudeOperator( omesh, 0, 0.0, 0.0 );
 
-  var positions = mesh.getPositions();
-  var cells = mesh.getCells();
+    console.log( 'omesh' );
+    MeshIntegrity( omesh );
+    meshOut = undefined;
+    meshOutTri = undefined;
+    buildGeometry();
+    smooth();
+    smooth(); 
+  } );
+}
 
-  // Faceted Normals
+function buildGeometry() {
+  if( !meshOut ) {
+    meshOut = DuplicateOperator( omesh );
+  }
+
+  geoWireOut = createGeoWire( meshOut.getPositions(), meshOut.getCells() );
+
+  meshOutTri = DuplicateOperator( meshOut );
+  TriangulateOperator( meshOutTri );
+
+  positions = positionsOut = meshOutTri.getPositions();
+  cells = cellsOut = meshOutTri.getCells();
+
+  geoOut = createGeo( positionsOut, cellsOut );
+  geoPointsOut = createGeoPoints( positionsOut );
+}
+
+function smooth() {
+  CatmullClarkOperator( meshOut );
+  buildGeometry();
+}
+
+function createGeo( positions, cells ) {
   var newPositions = [];
   var newNormals = [];
 
@@ -84,10 +133,13 @@ var fileReader = lgp.fileReader( path, function parseObj( text ) {
     newPositions.push( a, b, c );
     newNormals.push( n, n, n );
   }
-  geo = glGeometry( gl );
+  var geo = glGeometry( gl );
   geo.attr( 'aPosition', newPositions );
   geo.attr( 'aNormal', newNormals );
+  return geo;
+}
 
+function createGeoWire( positions, cells ) {
   var lines = [];
   for( var i = 0; i < cells.length; i++ ) {
     var cell = cells[ i ];
@@ -99,14 +151,17 @@ var fileReader = lgp.fileReader( path, function parseObj( text ) {
     }
   }
 
-  geoWire = glGeometry( gl );
+  var geoWire = glGeometry( gl );
   geoWire.attr( 'aPosition', positions );
-  geoWire.faces( lines, { size: 2 } )
+  geoWire.faces( lines, { size: 2 } );
+  return geoWire;
+}
 
-  geoPoints = glGeometry( gl );
+function createGeoPoints( positions ) {
+  var geoPoints = glGeometry( gl );
   geoPoints.attr( 'aPosition', positions );
-} );
-
+  return geoPoints;
+}
 
 // Set the canvas size to fill the window and its pixel density
 var mobile = isMobile( navigator.userAgent );
@@ -128,14 +183,12 @@ var vertexWireframeShader = glslify( './shaders/shaderDebug.vert' );
 var fragmentWireframeShader = glslify( './shaders/shaderDebug.frag' );
 var shaderDebug = glShader( gl, vertexWireframeShader, fragmentWireframeShader );
 
-var color = [ 1.0, 1.0, 1.0, 1.0 ];
-var colorPoints = [ 1.0, 1.0, 1.0, 0.5 ];
-var colorWire = [ 1.0, 1.0, 1.0, 0.25 ];
-
 // Setup Sketch Variables
 var height;
 var width;
 var frame = Math.PI;
+
+setupGeometry();
 
 function update() {
   // set projection
@@ -162,14 +215,18 @@ function render() {
   update();
   gl.viewport( 0, 0, width, height );
   clear( gl );
-  // gl.enable( gl.DEPTH_TEST );
-  gl.disable( gl.DEPTH_TEST );
-  // drawGeo();
-  drawGeoWireframe();
-  drawGeoPoints();
+  if( renderSolid ) {
+    gl.enable( gl.DEPTH_TEST );
+    drawGeo( geoOut );
+  }
+  else {
+    gl.disable( gl.DEPTH_TEST );
+  }
+  drawGeoWireframe( geoWireOut );
+  drawGeoPoints( geoPointsOut );
 }
 
-function drawGeo() {
+function drawGeo( geo ) {
   if( geo ) {
     gl.enable( gl.BLEND );
     gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
@@ -186,8 +243,8 @@ function drawGeo() {
   }
 }
 
-function drawGeoPoints() {
-  if( geoWire ) {
+function drawGeoPoints( geoPoints ) {
+  if( geoPoints ) {
     gl.enable( gl.BLEND );
     gl.blendFunc( gl.SRC_ALPHA, gl.ONE );
     geoPoints.bind( shaderDebug );
@@ -202,7 +259,7 @@ function drawGeoPoints() {
   }
 }
 
-function drawGeoWireframe() {
+function drawGeoWireframe( geoWire ) {
   if( geoWire ) {
     gl.enable( gl.BLEND );
     gl.blendFunc( gl.SRC_ALPHA, gl.ONE );
@@ -221,6 +278,23 @@ function drawGeoWireframe() {
 
 window.addEventListener( 'keydown', function( event ) {
   if( keyPressed( 'S' ) ) {
-    lgp.imageWriter( 'halfedge.png', canvas.toDataURL('image/png') );
+    lgp.imageWriter( 'cup.png', canvas.toDataURL('image/png') );
+    return;
+  }
+  if( keyPressed( 'E' ) ) {
+    lgp.fileWriter( "cup.stl", lgp.stlSerializer( { positions: positions, cells: cells } ) );
+    lgp.fileWriter( "cup.obj", lgp.objSerializer( { positions: positions, cells: cells } ) );
+    return;
+  }
+  if( keyPressed( 'W' ) ) {
+    renderSolid = !renderSolid;
+    return;
+  }
+  if( keyPressed( 'C' ) ) {
+    smooth();
+    return;
+  }
+  if( keyPressed( 'R' ) ) {
+    setupGeometry();
   }
 }, false );

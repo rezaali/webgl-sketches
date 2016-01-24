@@ -23,6 +23,8 @@
     "triangulate": "budo -p 9010 --title triangulate triangulate/triangulate.js:bundle.js --open --live",
     "triangulate2d": "budo -p 9011 --title triangulate2d triangulate2d/triangulate2d.js:bundle.js --open --live",
     "waves": "budo -p 9012 --title waves waves/waves.js:bundle.js --open --live",
+    "extrude": "budo -p 9013 --title extrude extrude/extrude.js:bundle.js --open --live",
+    "cup": "budo -p 9013 --title cup cup/cup.js:bundle.js --open --live",
     "bundle": "browserify index.js -o bundle.js"
   },
   "dependencies": {
