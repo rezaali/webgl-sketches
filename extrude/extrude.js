@@ -20,8 +20,8 @@ var isMobile = require('is-mobile');
 // Import YCAM GRP Libraries
 var cam = require('nsc')( canvas, { position: [ 0.0, 0.0, -40.0 ], damping: 0.1 } );
 var cga = require('cga');
-var lgp = require('./../../libs/lgp');
-var mda = require('./../../libs/mda');
+var lgp = require('lgp');
+var mda = require('mda');
 var Mesh = mda.Mesh;
 var FaceVertices = mda.FaceVertices;
 var InsertVertexOperator = mda.InsertVertexOperator;

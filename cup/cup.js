@@ -20,13 +20,13 @@ var fit = require('canvas-fit');
 var isMobile = require('is-mobile');
 
 // Import YCAM GRP Libraries
-var cam = require('./../../libs/nsc')( canvas, {
+var cam = require('nsc')( canvas, {
   position: [ 0.0, 0.0, -50.0 ],
   rotation: mat4.fromRotation( mat4.create(), Math.PI * 0.25, [ 1, 0, 0 ] )
 } );
 var cga = require('cga');
-var lgp = require('./../../libs/lgp');
-var mda = require('./../../libs/mda');
+var lgp = require('lgp');
+var mda = require('mda');
 var Mesh = mda.Mesh;
 var FaceVertices = mda.FaceVertices;
 var InsertVertexOperator = mda.InsertVertexOperator;
@@ -94,7 +94,7 @@ function setupGeometry() {
     meshOutTri = undefined;
     buildGeometry();
     smooth();
-    smooth(); 
+    smooth();
   } );
 }
 

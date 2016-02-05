@@ -48,7 +48,7 @@ for( var i = 0; i < ycam.length; i++ ){
 
 //Test Case for Triangulation Causes it to fail
 // console.log( ycam.length );
-for( var k = 0; k < 1; k++ ) {
+for( var k = 0; k < 2; k++ ) {
   var len = ycam.length;
   for( var i = 0; i < len ; i+=2 ) {
     var a = ycam[ i ];

@@ -41,11 +41,12 @@ var cam = require('nsc')( canvas, {
 } );
 
 var map = require('mhf').map;
+var mda = require('mda');
 var Mesh = require('mda').Mesh;
-var MeshIntegrity = require('mda').MeshIntegrity;
-var TriangulateOperator = require('mda').TriangulateOperator;
-var LoopOperator = require('mda').LoopOperator;
-var CatmullClarkOperator = require('mda').CatmullClarkOperator;
+var MeshIntegrity = mda.MeshIntegrity;
+var TriangulateOperator = mda.TriangulateOperator;
+var LoopOperator = mda.LoopOperator;
+var CatmullClarkOperator = mda.CatmullClarkOperator;
 
 var vertexNormals = require('guf').vertexNormals;
 var calculateNormal = require('guf').calculateNormal;

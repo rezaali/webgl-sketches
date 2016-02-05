@@ -9,7 +9,7 @@
     ]
   },
   "scripts": {
-    "all": "npm run hull & npm run triangulate2d & npm run loadobj & npm run loadstl & npm run halfedge & npm run triangulate & npm run letsgetprinting & npm run loopsmooth & npm run catmullclark & npm run dynamicdrawing & npm run particles & npm run springs & npm run waves",
+    "all" : "npm run catmullclark & npm run dynamicdrawing & npm run halfedge & npm run hull & npm run letsgetprinting & npm run loadobj & npm run loadstl & npm run loopsmooth & npm run particles & npm run springs & npm run triangulate & npm run triangulate2d & npm run waves & npm run extrude & npm run cup & npm run osaka & npm run kyoto & npm run tokyo & npm run void & npm run mitre & npm run cup & npm run extrude & npm run kyoto & npm run ycam & npm run mitre & npm run tokyo & npm run void",
     "catmullclark": "budo -p 9000 --title catmullclark catmullclark/catmullclark.js:bundle.js --open --live",
     "dynamicdrawing": "budo -p 9001 --title dynamicdrawing dynamicdrawing/dynamicdrawing.js:bundle.js --open --live",
     "halfedge": "budo -p 9002 --title halfedge halfedge/halfedge.js:bundle.js --open --live",
@@ -24,7 +24,17 @@
     "triangulate2d": "budo -p 9011 --title triangulate2d triangulate2d/triangulate2d.js:bundle.js --open --live",
     "waves": "budo -p 9012 --title waves waves/waves.js:bundle.js --open --live",
     "extrude": "budo -p 9013 --title extrude extrude/extrude.js:bundle.js --open --live",
-    "cup": "budo -p 9013 --title cup cup/cup.js:bundle.js --open --live",
+    "cup": "budo -p 9014 --title cup cup/cup.js:bundle.js --open --live",
+    "osaka": "budo -p 9015 --title osaka osaka/osaka.js:bundle.js --open --live",
+    "kyoto": "budo -p 9016 --title kyoto kyoto/kyoto.js:bundle.js --open --live",
+    "tokyo": "budo -p 9017 --title tokyo tokyo/tokyo.js:bundle.js --open --live",
+    "void": "budo -p 9018 --title void void/void.js:bundle.js --open --live",
+    "mitre": "budo -p 9019 --title mitre mitre/mitre.js:bundle.js --open --live",
+    "extrude": "budo -p 9020 --title extrude extrude/extrude.js:bundle.js --open --live",
+    "kyoto": "budo -p 9021 --title kyoto kyoto/kyoto.js:bundle.js --open --live",
+    "ycam": "budo -p 9022 --title ycam ycam/ycam.js:bundle.js --open --live",
+    "tokyo": "budo -p 9023 --title tokyo tokyo/tokyo.js:bundle.js --open --live",
+    "void": "budo -p 9024 --title void void/void.js:bundle.js --open --live",
     "bundle": "browserify index.js -o bundle.js"
   },
   "dependencies": {
