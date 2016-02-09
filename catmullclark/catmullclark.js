@@ -34,8 +34,6 @@ var models = require('./../models');
 //Interaction
 var keyPressed = require('key-pressed');
 
-var easing = require('eases/expo-in-out');
-
 var mesh;
 var positions;
 var cells;
